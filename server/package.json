@@ -17,9 +17,13 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1093.0",
     "@aws-sdk/s3-request-presigner": "^3.1093.0",
+    "@clerk/express": "^2.1.45",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "mongoose": "^9.8.0"
+    "helmet": "^8.3.0",
+    "mongoose": "^9.8.0",
+    "morgan": "^1.11.0",
+    "zod": "^4.4.3"
   }
 }
