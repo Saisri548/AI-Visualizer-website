@@ -1,5 +1,5 @@
 import express from "express";
-import { testS3Connection } from "../controllers/tests3Controller.js";
+import { testS3Connection } from "../Controllers/tests3Controller.js";
 
 const trouter = express.Router();
 
