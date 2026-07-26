@@ -61,12 +61,15 @@ export const getAllConcepts = async (req, res) => {
 // GET ALL CONCEPTS OF CATEGORY
 
 export const getConceptsByCategory = async (req, res) => {
-
   try {
-
+    console.log("Slug:", req.params.slug);
+   console.log("✅ getConceptsByCategory called");
+console.log("Slug:", req.params.slug);
     const category = await Category.findOne({
       slug: req.params.slug,
     });
+
+    console.log("Category:", category);
 
     if (!category) {
       return res.status(404).json({
@@ -78,26 +81,24 @@ export const getConceptsByCategory = async (req, res) => {
     const concepts = await Concept.find({
       categoryId: category._id,
       isPublished: true,
-    }).sort({ order: 1 });
+    });
 
-    res.status(200).json({
+    console.log("Concepts:", concepts);
+
+    res.json({
       success: true,
-      count: concepts.length,
       data: concepts,
     });
 
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
 
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: err.message,
     });
-
   }
-
 };
-
-
 // GET SINGLE CONCEPT
 
 export const getConceptBySlug = async (req, res) => {

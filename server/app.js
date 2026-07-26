@@ -20,14 +20,10 @@ app.get("/", (req, res) => {
   });
 });
 
-// API Routes
-app.use("/api/categories", router);
-
-app.use("/api/concepts", Crouter);
-app.use(
-"/api/articles",
-Arouter
-);
+app.use("/api", router);      // Categories + category concepts
+app.use("/api/concepts", Crouter); // Concept operations
+app.use("/api/articles", Arouter);
+app.use("/api/S3", trouter);
 
 
 app.use("/api/S3",trouter)
