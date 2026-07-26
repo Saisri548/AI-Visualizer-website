@@ -3,26 +3,27 @@ import express from "express";
 import {
   createCategory,
   getCategories,
-  getCategoryById,
+
   updateCategory,
   deleteCategory,
-} from "../Controllers/category.controller.js"
+} from "../Controllers/category.controller.js";
+
+import {
+  createConcept,
+  getConceptsByCategory,
+} from "../Controllers/concept.controller.js";
 
 const router = express.Router();
 
-// Create
-router.post("/", createCategory);
+// Categories
+router.post("/categories", createCategory);
+router.get("/categories", getCategories);
 
-// Read All
-router.get("/", getCategories);
+router.put("/categories/:id", updateCategory);
+router.delete("/categories/:id", deleteCategory);
 
-// Read One
-router.get("/:id", getCategoryById);
-
-// Update
-router.put("/:id", updateCategory);
-
-// Delete
-router.delete("/:id", deleteCategory);
+// Concepts inside a category
+router.post("/categories/:slug/concepts", createConcept);
+router.get("/categories/:slug/concepts", getConceptsByCategory);
 
 export default router;

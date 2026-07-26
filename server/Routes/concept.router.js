@@ -1,52 +1,24 @@
 import express from "express";
 
 import {
-
-createConcept,
-getConceptsByCategory,
-getConceptBySlug,
-updateConcept,
-deleteConcept,
-
-} from "../Controllers/concept.controller.js"
+  getAllConcepts,
+  getConceptBySlug,
+  updateConcept,
+  deleteConcept,
+} from "../Controllers/concept.controller.js";
 
 const Crouter = express.Router();
 
+// Get all concepts
+Crouter.get("/", getAllConcepts);
 
-// Category Based
+// Get single concept
+Crouter.get("/:slug", getConceptBySlug);
 
-Crouter.post(
-    "/categories/:slug/concepts",
-    createConcept
-);
+// Update concept
+Crouter.put("/:id", updateConcept);
 
-Crouter.get(
-    "/categories/:slug/concepts",
-    getConceptsByCategory
-);
-
-
-// Single Concept
-
-Crouter.get(
-    "/concepts/:slug",
-    getConceptBySlug
-);
-
-
-// Update
-
-Crouter.put(
-    "/concepts/:id",
-    updateConcept
-);
-
-
-// Delete
-
-Crouter.delete(
-    "/concepts/:id",
-    deleteConcept
-);
+// Delete concept
+Crouter.delete("/:id", deleteConcept);
 
 export default Crouter;

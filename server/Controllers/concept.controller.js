@@ -38,7 +38,26 @@ export const createConcept = async (req, res) => {
   }
 };
 
+// GET ALL CONCEPTS
 
+export const getAllConcepts = async (req, res) => {
+  try {
+    const concepts = await Concept.find({ isPublished: true })
+      .populate("categoryId", "title slug")
+      .sort({ order: 1 });
+
+    res.status(200).json({
+      success: true,
+      count: concepts.length,
+      data: concepts,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 // GET ALL CONCEPTS OF CATEGORY
 
 export const getConceptsByCategory = async (req, res) => {
