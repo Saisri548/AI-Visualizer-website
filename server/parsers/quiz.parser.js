@@ -1,64 +1,112 @@
-export function parseQuiz(markdown) {
-  const sectionMatch = markdown.match(
-    /##\s+Quiz\s*\n([\s\S]*?)(?=\n##\s+|$)/i
+export function parseQuiz(markdown){
+
+  const match = markdown.match(
+    /#\s+Quiz\s*\n([\s\S]*?)(?=\n#\s+|$)/i
   );
 
-  if (!sectionMatch) return [];
 
-  const section = sectionMatch[1];
+  if(!match) return [];
 
-  const blocks = section
-    .split(/###\s+Question\s+\d+/i)
-    .filter(Boolean);
 
-  const questions = [];
+  const section = match[1];
 
-  for (const block of blocks) {
+
+  const blocks = section.split(
+    /\n---\n/
+  );
+
+
+  const questions=[];
+
+
+  for(const block of blocks){
+
+
     const lines = block
       .split("\n")
-      .map(l => l.trim())
+      .map(x=>x.trim())
       .filter(Boolean);
 
-    const question = lines[0];
 
-    const options = lines
-      .filter(l => /^[A-D]\)/.test(l))
-      .map(l => l.replace(/^[A-D]\)\s*/, ""));
 
-    const answerLine = lines.find(l =>
-      l.startsWith("**Correct Answer:**")
+    const questionLine = lines.find(x =>
+      /^\*\*\d+\./.test(x)
     );
 
-    const letter = answerLine
-      ?.replace("**Correct Answer:**", "")
+
+    if(!questionLine) continue;
+
+
+
+    const question =
+      questionLine
+      .replace(/\*\*/g,"")
+      .replace(/^\d+\.\s*/,"")
       .trim();
 
-    const map = {
-      A: 0,
-      B: 1,
-      C: 2,
-      D: 3,
-    };
 
-    const explanationIndex = lines.findIndex(l =>
-      l.startsWith("**Explanation:**")
+
+    const options = lines
+      .filter(x=>/^[A-D]\)/.test(x))
+      .map(x=>
+        x.replace(/^[A-D]\)\s*/,"")
+      );
+
+
+
+    const answerLine = lines.find(x =>
+      x.includes("Correct Answer")
     );
 
+
+    const letter =
+      answerLine
+      ?.replace(/\*\*Correct Answer:\*\*/,"")
+      .trim();
+
+
+
+    const answerMap={
+      A:0,
+      B:1,
+      C:2,
+      D:3
+    };
+
+
+
+    const explanationLine = lines.findIndex(x =>
+      x.includes("Explanation")
+    );
+
+
     const explanation =
-      explanationIndex >= 0
-        ? lines
-            .slice(explanationIndex + 1)
-            .join(" ")
-            .replace(/---/g, "")
-        : "";
+      explanationLine >=0
+      ? lines
+          .slice(explanationLine)
+          .join(" ")
+          .replace(/\*\*Explanation:\*\*/,"")
+          .trim()
+      :"";
+
+
 
     questions.push({
+
       question,
+
       options,
-      correctAnswer: map[letter],
-      explanation,
+
+      correctAnswer:
+        answerMap[letter],
+
+      explanation
+
     });
+
   }
 
+
   return questions;
+
 }

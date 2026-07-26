@@ -10,6 +10,7 @@ export default function ArticlePage() {
   const [articleData, setArticleData] = useState(null);
 
   const [loading, setLoading] = useState(true);
+ 
 
   useEffect(() => {
 
@@ -22,6 +23,10 @@ export default function ArticlePage() {
         );
 
         setArticleData(res.data.data);
+          console.log("Full Response:", res.data);
+console.log("Article Data:", res.data.data);
+console.log("Article:", res.data.data.article);
+console.log("Content:", res.data.data.article?.content);
 
       } catch (err) {
 

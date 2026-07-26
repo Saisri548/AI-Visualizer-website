@@ -33,8 +33,11 @@ export async function getArticle(slug) {
 
   console.log("3. Markdown URL:", concept.markdownUrl);
 
-  const markdown = await getMarkdownFromS3(concept.markdownUrl);
 
+
+
+  const markdown = await getMarkdownFromS3(concept.markdownUrl);
+console.log(markdown);
   console.log("4. Markdown loaded");
 
   const article = parseMarkdownArticle(markdown);
