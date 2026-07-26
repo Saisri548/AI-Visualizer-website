@@ -17,105 +17,44 @@ from "./markdownParser.js";
 
 
 
-export async function getArticle(slug){
+export async function getArticle(slug) {
+  console.log("1. Slug:", slug);
 
+  const concept = await Concept.findOne({
+    slug,
+    isPublished: true,
+  }).populate("categoryId");
 
+  console.log("2. Concept:", concept);
 
-const concept =
-await Concept.findOne({
+  if (!concept) {
+    throw new Error("Concept not found");
+  }
 
-slug,
+  console.log("3. Markdown URL:", concept.markdownUrl);
 
-isPublished:true
+  const markdown = await getMarkdownFromS3(concept.markdownUrl);
 
-})
-.populate("categoryId");
+  console.log("4. Markdown loaded");
 
+  const article = parseMarkdownArticle(markdown);
 
+  console.log("5. Markdown parsed");
 
+  return {
+    metadata: {
+      title: concept.title,
+      excerpt: concept.excerpt,
+      difficulty: concept.difficulty,
+      readingTime: concept.readingTime,
+      category: concept.categoryId?.name,
+      tags: concept.tags,
+      coverImage: concept.coverImage,
+    },
 
-if(!concept){
-
-throw new Error(
-"Concept not found"
-);
-
-}
-
-
-
-
-const markdown =
-await getMarkdownFromS3(
-concept.markdownUrl
-);
-
-
-
-const article =
-parseMarkdownArticle(
-markdown
-);
-
-
-
-
-
-return {
-
-
-metadata:{
-
-
-title:
-concept.title,
-
-
-excerpt:
-concept.excerpt,
-
-
-difficulty:
-concept.difficulty,
-
-
-readingTime:
-concept.readingTime,
-
-
-category:
-concept.categoryId.name,
-
-
-tags:
-concept.tags,
-
-
-coverImage:
-concept.coverImage
-
-
-},
-
-
-
-article:
-article.article,
-
-
-quiz:
-article.quiz,
-
-
-references:
-article.references,
-
-
-nextConcept:
-article.nextConcept
-
-
-};
-
-
+    article: article.article,
+    quiz: article.quiz,
+    references: article.references,
+    nextConcept: article.nextConcept,
+  };
 }
