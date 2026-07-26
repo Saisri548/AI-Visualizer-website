@@ -1,23 +1,16 @@
-export function extractSection(markdown, title) {
+export function extractSection(markdown, heading) {
+  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-const regex = new RegExp(
-`# ${title}[\\s\\S]*?(?=\\n# |$)`,
-"i"
-);
+  const regex = new RegExp(
+    `##\\s+${escapedHeading}\\s*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`,
+    "i"
+  );
 
+  const match = markdown.match(regex);
 
-const match = markdown.match(regex);
+  if (!match) return "";
 
-
-if(!match)
-return "";
-
-
-return match[0]
-.replace(
-new RegExp(`# ${title}`,"i"),
-""
-)
-.trim();
-
+  return match[1]
+    .replace(/\n---\s*/g, "")
+    .trim();
 }

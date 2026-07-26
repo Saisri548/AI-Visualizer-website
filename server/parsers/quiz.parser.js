@@ -1,46 +1,64 @@
-export function parseQuiz(markdown){
+export function parseQuiz(markdown) {
+  const sectionMatch = markdown.match(
+    /##\s+Quiz\s*\n([\s\S]*?)(?=\n##\s+|$)/i
+  );
 
+  if (!sectionMatch) return [];
 
-const section =
-markdown.match(
-/# Quiz([\s\S]*?)(?=\n# References|$)/i
-);
+  const section = sectionMatch[1];
 
+  const blocks = section
+    .split(/###\s+Question\s+\d+/i)
+    .filter(Boolean);
 
+  const questions = [];
 
-if(!section)
-return [];
+  for (const block of blocks) {
+    const lines = block
+      .split("\n")
+      .map(l => l.trim())
+      .filter(Boolean);
 
+    const question = lines[0];
 
+    const options = lines
+      .filter(l => /^[A-D]\)/.test(l))
+      .map(l => l.replace(/^[A-D]\)\s*/, ""));
 
-return section[1]
+    const answerLine = lines.find(l =>
+      l.startsWith("**Correct Answer:**")
+    );
 
-.split(/\n\*\*\d+\./)
+    const letter = answerLine
+      ?.replace("**Correct Answer:**", "")
+      .trim();
 
-.filter(Boolean)
+    const map = {
+      A: 0,
+      B: 1,
+      C: 2,
+      D: 3,
+    };
 
-.map(q=>{
+    const explanationIndex = lines.findIndex(l =>
+      l.startsWith("**Explanation:**")
+    );
 
+    const explanation =
+      explanationIndex >= 0
+        ? lines
+            .slice(explanationIndex + 1)
+            .join(" ")
+            .replace(/---/g, "")
+        : "";
 
-let lines =
-q.trim()
-.split("\n");
+    questions.push({
+      question,
+      options,
+      correctAnswer: map[letter],
+      explanation,
+    });
+  }
 
-
-return {
-
-question:
-lines[0]
-.trim(),
-
-
-content:
-q.trim()
-
-};
-
-
-});
-
-
+  return questions;
 }

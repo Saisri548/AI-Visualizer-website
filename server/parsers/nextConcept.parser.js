@@ -1,27 +1,13 @@
-export function parseNextConcept(markdown){
+export function parseNextConcept(markdown) {
+  const match = markdown.match(
+    /##\s+Next Concept\s*\n([\s\S]*?)$/i
+  );
 
+  if (!match) return null;
 
-const section =
-markdown.match(
-/# Next Concept([\s\S]*)/i
-);
-
-
-if(!section)
-return {
-title:""
-};
-
-
-
-return {
-
-title:
-section[1]
-.replace(/\*/g,"")
-.trim()
-
-};
-
-
+  return {
+    title: match[1]
+      .replace(/---/g, "")
+      .trim(),
+  };
 }

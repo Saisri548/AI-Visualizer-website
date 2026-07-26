@@ -1,58 +1,21 @@
-export function parseGlossary(markdown){
+export function parseGlossary(markdown) {
+  const match = markdown.match(
+    /##\s+Glossary\s*\n([\s\S]*?)(?=\n##\s+|$)/i
+  );
 
+  if (!match) return [];
 
-const section =
-markdown.match(
-/# Glossary([\s\S]*?)(?=\n#|$)/i
-);
+  return match[1]
+    .split("\n")
+    .map(line => {
+      const item = line.match(/\*\*(.*?)\*\*\s*:\s*(.*)/);
 
+      if (!item) return null;
 
-
-if(!section)
-return [];
-
-
-
-return section[1]
-
-.split("\n")
-
-.filter(line=>
-line.trim().startsWith("-")
-)
-
-.map(line=>{
-
-
-let clean =
-line
-.replace("-","")
-.replace(/\*/g,"")
-.trim();
-
-
-
-let parts =
-clean.split(":");
-
-
-
-return {
-
-term:
-parts[0].trim(),
-
-definition:
-parts.slice(1)
-.join(":")
-.trim()
-
-};
-
-
-})
-
-.filter(item=>item.term);
-
-
+      return {
+        term: item[1].trim(),
+        definition: item[2].trim(),
+      };
+    })
+    .filter(Boolean);
 }

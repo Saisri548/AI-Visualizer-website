@@ -1,38 +1,22 @@
-export function parseList(markdown,title){
+export function parseList(markdown, heading) {
+  const escapedHeading = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+  const regex = new RegExp(
+    `##\\s+${escapedHeading}\\s*\\n([\\s\\S]*?)(?=\\n##\\s+|$)`,
+    "i"
+  );
 
-const regex =
-new RegExp(
-`# ${title}[\\s\\S]*?(?=\\n# |$)`,
-"i"
-);
+  const match = markdown.match(regex);
 
+  if (!match) return [];
 
-const match =
-markdown.match(regex);
-
-
-if(!match)
-return [];
-
-
-
-return match[0]
-
-.replace(
-new RegExp(`# ${title}`,"i"),
-""
-)
-
-.split("\n")
-
-.map(item=>
-item
-.replace(/^[-0-9.]+/,"")
-.trim()
-)
-
-.filter(Boolean);
-
-
+  return match[1]
+    .split("\n")
+    .map(line =>
+      line
+        .replace(/^[-*]\s*/, "")
+        .trim()
+    )
+    .filter(line => line.length > 0)
+    .filter(line => line !== "---");
 }

@@ -1,52 +1,27 @@
-export function parseInterview(markdown){
+export function parseInterview(markdown) {
+  const match = markdown.match(
+    /##\s+Interview Questions\s*\n([\s\S]*?)(?=\n##\s+|$)/i
+  );
 
+  if (!match) return [];
 
-const section =
-markdown.match(
-/# Interview Questions([\s\S]*?)(?=\n#|$)/i
-);
+  const section = match[1];
 
+  const regex =
+    /###\s*(.*?)\n([\s\S]*?)(?=\n###|$)/g;
 
-if(!section)
-return [];
+  const questions = [];
 
+  let item;
 
+  while ((item = regex.exec(section)) !== null) {
+    questions.push({
+      question: item[1].trim(),
+      answer: item[2]
+        .replace(/---/g, "")
+        .trim(),
+    });
+  }
 
-return section[1]
-
-.split(/\n\*\*\d+\./)
-
-.filter(Boolean)
-
-.map(item=>{
-
-
-const lines =
-item.trim()
-.split("\n");
-
-
-return {
-
-
-question:
-lines[0]
-.replace(/\*/g,"")
-.replace(/^\d+\./,"")
-.trim(),
-
-
-answer:
-lines
-.slice(1)
-.join("\n")
-.trim()
-
-
-};
-
-
-});
-
-
+  return questions;
 }
