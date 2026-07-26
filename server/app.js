@@ -3,7 +3,7 @@ import cors from "cors";
 import router from "./Routes/category.routes.js";
 import Crouter from "./Routes/concept.router.js";
 import trouter from "./Routes/testS3.Router.js";
-
+import Arouter from "./Routes/article.routes.js";
 
 const app = express();
 
@@ -24,6 +24,12 @@ app.get("/", (req, res) => {
 app.use("/api/categories", router);
 
 app.use("/api/concepts", Crouter);
+app.use(
+"/api/articles",
+Arouter
+);
+
+
 app.use("/api/S3",trouter)
 // 404 Handler
 app.use((req, res) => {

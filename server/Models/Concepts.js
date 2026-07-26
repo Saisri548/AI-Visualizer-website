@@ -25,9 +25,11 @@ const conceptSchema = new mongoose.Schema(
     excerpt: {
       type: String,
       required: true,
+      trim: true,
     },
 
-    content: {
+    // S3 Markdown File
+    markdownUrl: {
       type: String,
       required: true,
     },
@@ -37,10 +39,22 @@ const conceptSchema = new mongoose.Schema(
       default: "",
     },
 
+    difficulty: {
+      type: String,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+      default: "Beginner",
+    },
+
     readingTime: {
       type: Number,
       default: 5,
     },
+
+    tags: [
+      {
+        type: String,
+      },
+    ],
 
     order: {
       type: Number,
