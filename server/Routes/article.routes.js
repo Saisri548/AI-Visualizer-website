@@ -2,7 +2,7 @@ import express from "express";
 
 import {
 getArticleController
-} from "../controllers/article.controller.js";
+} from "../Controllers/article.controller.js";
 
 
 const Arouter = express.Router();
