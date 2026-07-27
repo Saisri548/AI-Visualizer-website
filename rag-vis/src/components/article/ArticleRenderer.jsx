@@ -5,7 +5,7 @@ import Glossary from "./Glossary";
 import Quiz from "./Quiz";
 import References from "./References";
 import NextConcept from "./NextConcept";
-import InterviewQuestions from "./InterviewQuestions";
+import InterviewQuestions from "./InterviewQuestion";
 import LearningObjectives from "./LearningObjectives";
 import Prerequisites from "./Prerequisites";
 
