@@ -20,28 +20,25 @@ export function parseReferences(markdown) {
   const section = match[1];
 
 
-  const getCategory = (title)=>{
+  function getCategory(title) {
+  const regex = new RegExp(
+    `##\\s+${title}\\s*\\n([\\s\\S]*?)(?=\\n##|$)`,
+    "i"
+  );
 
-    const regex = new RegExp(
-      `##\\s+${title}\\s*\\n([\\s\\S]*?)(?=\\n##|$)`,
-      "i"
-    );
+  const result = section.match(regex);
 
+  if (!result) return [];
 
-    const result = section.match(regex);
-
-
-    if(!result) return [];
-
-
-    return result[1]
-      .split("\n")
-      .map(item =>
-        item.replace(/^[-*]\s*/,"").trim()
-      )
-      .filter(Boolean);
-
-  };
+  return result[1]
+    .split("\n")
+    .map(line => line.replace(/^[-*]\s*/, "").trim())
+    .filter(Boolean)
+    .map(text => ({
+      title: text,
+      url: "#",
+    }));
+}
 
 
   return {
