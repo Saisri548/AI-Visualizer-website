@@ -3,8 +3,7 @@ import cors from "cors";
 import router from "./Routes/category.routes.js";
 import Crouter from "./Routes/concept.router.js";
 import trouter from "./Routes/testS3.Router.js";
-import Arouter from "./Routes/article.routes.js";
-
+import Mrouter from "./Routes/markdown.routes.js";
 const app = express();
 
 // Middlewares
@@ -22,7 +21,8 @@ app.get("/", (req, res) => {
 
 app.use("/api", router);      // Categories + category concepts
 app.use("/api/concepts", Crouter); // Concept operations
-app.use("/api/articles", Arouter);
+
+app.use("/api/markdown", Mrouter);
 app.use("/api/S3", trouter);
 
 

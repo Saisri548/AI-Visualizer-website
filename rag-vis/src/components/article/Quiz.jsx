@@ -1,206 +1,151 @@
-import { useState } from "react";
-import {
-  CheckCircle2,
-  XCircle,
-  HelpCircle,
-  RotateCcw,
-} from "lucide-react";
+import { useMemo, useState } from "react";
+import MarkdownRenderer from "./MarkdownRenderer";
 
-export default function Quiz({ questions = [] }) {
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [showResults, setShowResults] = useState(false);
+export default function Quiz({ data }) {
+  if (!data?.content) return null;
 
-  if (!questions.length) return null;
+  const questions = useMemo(() => {
+    return data.content
+      .split("\n---")
+      .filter(Boolean)
+      .map((q) => {
+        const answer =
+          q.match(/\*\*Correct Answer:\*\*\s*([A-D])/i)?.[1] || "";
 
-  const handleSelect = (questionIndex, optionIndex) => {
-    if (showResults) return;
+        return {
+          text: q,
+          answer,
+        };
+      });
+  }, [data]);
 
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [questionIndex]: optionIndex,
-    }));
+  const [current, setCurrent] = useState(0);
+  const [selected, setSelected] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSelect = (value) => {
+    if (submitted) return;
+
+    setSelected({
+      ...selected,
+      [current]: value,
+    });
   };
 
-  const score = questions.reduce((total, question, index) => {
-    return (
-      total +
-      (selectedAnswers[index] === question.correctAnswer ? 1 : 0)
-    );
-  }, 0);
-
-  const resetQuiz = () => {
-    setSelectedAnswers({});
-    setShowResults(false);
-  };
+  const score = questions.filter(
+    (q, i) => selected[i] === q.answer
+  ).length;
 
   return (
-    <section className="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-8 shadow-sm">
+    <section className="mb-12">
 
-      {/* Header */}
+      <h2 className="text-3xl font-bold mb-6">
+        Quiz
+      </h2>
 
-      <div className="mb-8 flex items-center gap-4">
+      <div className="border rounded-xl p-6">
 
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
+        <MarkdownRenderer
+          content={questions[current].text}
+        />
 
-          <HelpCircle className="h-6 w-6 text-blue-600" />
+        <div className="grid grid-cols-2 gap-4 mt-6">
+
+          {["A", "B", "C", "D"].map((opt) => (
+            <button
+              key={opt}
+              onClick={() => handleSelect(opt)}
+              className={`border rounded-lg p-3 transition
+
+${
+selected[current]===opt
+?"bg-blue-600 text-white"
+:"hover:bg-gray-100"
+}`}
+            >
+              {opt}
+            </button>
+          ))}
 
         </div>
 
-        <div>
+        <div className="flex justify-between mt-8">
 
-          <h2 className="text-3xl font-bold text-slate-900">
+          <button
+            disabled={current===0}
+            onClick={()=>setCurrent(current-1)}
+            className="px-4 py-2 border rounded-lg"
+          >
+            Previous
+          </button>
 
-            Quiz
+          {current!==questions.length-1 && (
+            <button
+              onClick={()=>setCurrent(current+1)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              Next
+            </button>
+          )}
 
-          </h2>
-
-          <p className="mt-1 text-slate-500">
-
-            Test your understanding of this topic.
-
-          </p>
+          {current===questions.length-1 && (
+            <button
+              onClick={()=>setSubmitted(true)}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg"
+            >
+              Submit Quiz
+            </button>
+          )}
 
         </div>
-
       </div>
 
-      {/* Questions */}
+      {submitted && (
+        <div className="mt-8 border rounded-xl p-6 bg-green-50">
 
-      <div className="space-y-10">
+          <h3 className="text-2xl font-bold">
+            Quiz Result
+          </h3>
 
-        {questions.map((question, qIndex) => (
+          <p className="mt-2 text-lg">
+            Score :
+            <strong>
+              {" "}
+              {score} / {questions.length}
+            </strong>
+          </p>
 
-          <div
-            key={qIndex}
-            className="rounded-xl border border-slate-200 bg-white p-6"
-          >
+          <div className="w-full bg-gray-300 rounded-full h-4 mt-5">
 
-            <h3 className="text-lg font-semibold text-slate-900">
-
-              Q{qIndex + 1}. {question.question}
-
-            </h3>
-
-            <div className="mt-5 space-y-3">
-
-              {question.options.map((option, optionIndex) => {
-
-                const selected =
-                  selectedAnswers[qIndex] === optionIndex;
-
-                const correct =
-                  optionIndex === question.correctAnswer;
-
-                let classes =
-                  "w-full rounded-lg border p-4 text-left transition ";
-
-                if (!showResults) {
-                  classes += selected
-                    ? "border-blue-500 bg-blue-50"
-                    : "hover:bg-slate-50";
-                } else {
-                  if (correct) {
-                    classes +=
-                      "border-green-500 bg-green-50";
-                  } else if (selected) {
-                    classes +=
-                      "border-red-500 bg-red-50";
-                  }
-                }
-
-                return (
-                  <button
-                    key={optionIndex}
-                    onClick={() =>
-                      handleSelect(qIndex, optionIndex)
-                    }
-                    className={classes}
-                  >
-                    <div className="flex items-center justify-between">
-
-                      <span>{option}</span>
-
-                      {showResults && correct && (
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      )}
-
-                      {showResults &&
-                        selected &&
-                        !correct && (
-                          <XCircle className="h-5 w-5 text-red-600" />
-                        )}
-
-                    </div>
-
-                  </button>
-                );
-              })}
-
-            </div>
-
-            {showResults && (
-
-              <div className="mt-5 rounded-lg bg-slate-50 p-5">
-
-                <h4 className="font-semibold text-blue-700">
-
-                  Explanation
-
-                </h4>
-
-                <p className="mt-2 leading-7 text-slate-700">
-
-                  {question.explanation}
-
-                </p>
-
-              </div>
-
-            )}
+            <div
+              className="bg-green-600 h-4 rounded-full"
+              style={{
+                width: `${
+                  (score/questions.length)*100
+                }%`,
+              }}
+            />
 
           </div>
 
-        ))}
+          <p className="mt-4">
+            {score===questions.length &&
+              "🎉 Excellent!"}
 
-      </div>
+            {score>=7 &&
+             score<questions.length &&
+              "👏 Great Job!"}
 
-      {/* Footer */}
+            {score>=5 &&
+             score<7 &&
+              "👍 Good Attempt!"}
 
-      <div className="mt-10 flex flex-wrap gap-4">
+            {score<5 &&
+              "📚 Revise once and try again."}
+          </p>
 
-        {!showResults ? (
-
-          <button
-            onClick={() => setShowResults(true)}
-            className="rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-700"
-          >
-            Submit Quiz
-          </button>
-
-        ) : (
-
-          <>
-            <div className="flex items-center rounded-xl bg-green-100 px-5 py-3 font-semibold text-green-700">
-
-              Score : {score} / {questions.length}
-
-            </div>
-
-            <button
-              onClick={resetQuiz}
-              className="flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 font-semibold text-white hover:bg-slate-800"
-            >
-              <RotateCcw className="h-5 w-5" />
-
-              Try Again
-
-            </button>
-          </>
-
-        )}
-
-      </div>
-
+        </div>
+      )}
     </section>
   );
 }
