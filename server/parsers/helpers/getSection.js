@@ -1,8 +1,11 @@
 export function getSection(markdown, heading) {
-  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const escapedHeading = heading.replace(
+    /[.*+?^${}()|[\]\\]/g,
+    "\\$&"
+  );
 
   const regex = new RegExp(
-    `#{1,6}\\s+${escaped}\\s*\\n([\\s\\S]*?)(?=\\n#{1,6}\\s+|$)`,
+    `#{1,6}\\s+${escapedHeading}\\s*\\n([\\s\\S]*?)(?=\\n#{1,6}\\s+|$)`,
     "i"
   );
 
