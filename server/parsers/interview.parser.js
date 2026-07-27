@@ -1,40 +1,34 @@
+import { getSection } from "./helpers/getSection.js";
+
 export function parseInterview(markdown) {
 
-  const match = markdown.match(
-    /#\s+Interview Questions\s*\n([\s\S]*?)(?=\n#\s+|$)/i
+  const section = getSection(
+    markdown,
+    "Interview Questions"
   );
 
-
-  if (!match) return [];
-
-
-  const section = match[1];
-
+  if (!section) return [];
 
   const regex =
-    /\*\*\d+\.\s*(.*?)\*\*\s*\n([\s\S]*?)(?=\n\*\*\d+\.|$)/g;
-
+    /\*\*(.*?)\*\*\s*([\s\S]*?)(?=\n\*\*|$)/g;
 
   const questions = [];
 
-  let item;
+  let match;
 
-
-  while ((item = regex.exec(section)) !== null) {
+  while ((match = regex.exec(section)) !== null) {
 
     questions.push({
 
-      question: item[1]
-        .trim(),
+      question: match[1].trim(),
 
-      answer: item[2]
-        .replace(/---/g, "")
+      answer: match[2]
+        .replace(/^---$/gm, "")
         .trim()
 
     });
 
   }
-
 
   return questions;
 }

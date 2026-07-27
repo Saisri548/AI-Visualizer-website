@@ -1,13 +1,20 @@
+import { getSection } from "./helpers/getSection.js";
+
 export function parseNextConcept(markdown) {
-  const match = markdown.match(
-    /##\s+Next Concept\s*\n([\s\S]*?)$/i
+
+  const section = getSection(
+    markdown,
+    "Next Concept"
   );
 
-  if (!match) return null;
+  if (!section) return null;
 
   return {
-    title: match[1]
-      .replace(/---/g, "")
-      .trim(),
+
+    title: section
+      .replace(/\*\*/g, "")
+      .trim()
+
   };
+
 }

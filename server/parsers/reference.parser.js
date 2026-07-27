@@ -1,55 +1,69 @@
-export function parseReferences(markdown) {
+import { getSection } from "./helpers/getSection.js";
 
-  const match = markdown.match(
-    /#\s+References\s*\n([\s\S]*?)(?=\n#\s+|$)/i
+function extractCategory(section, title) {
+
+  const regex = new RegExp(
+    `\\*\\*${title}\\*\\*([\\s\\S]*?)(?=\\n\\*\\*|$)`,
+    "i"
   );
 
+  const match = section.match(regex);
 
-  if(!match){
+  if (!match) return [];
+
+  return match[1]
+    .split("\n")
+    .map(line =>
+      line.replace(/^[-*]\s*/, "").trim()
+    )
+    .filter(Boolean);
+
+}
+
+export function parseReferences(markdown) {
+
+  const section = getSection(
+    markdown,
+    "References"
+  );
+
+  if (!section) {
 
     return {
+
       papers: [],
+
       books: [],
+
       documentation: [],
-      websites:[]
+
+      websites: []
+
     };
 
   }
 
-
-  const section = match[1];
-
-
-  function getCategory(title) {
-  const regex = new RegExp(
-    `##\\s+${title}\\s*\\n([\\s\\S]*?)(?=\\n##|$)`,
-    "i"
-  );
-
-  const result = section.match(regex);
-
-  if (!result) return [];
-
-  return result[1]
-    .split("\n")
-    .map(line => line.replace(/^[-*]\s*/, "").trim())
-    .filter(Boolean)
-    .map(text => ({
-      title: text,
-      url: "#",
-    }));
-}
-
-
   return {
 
-    papers:getCategory("Research Papers"),
+    papers: extractCategory(
+      section,
+      "Research Papers"
+    ),
 
-    books:getCategory("Books"),
+    books: extractCategory(
+      section,
+      "Books"
+    ),
 
-    documentation:getCategory("Official Documentation"),
+    documentation: extractCategory(
+      section,
+      "Official Documentation"
+    ),
 
-    websites:getCategory("Important Websites")
+    websites: extractCategory(
+      section,
+      "Important Websites"
+    )
 
   };
 

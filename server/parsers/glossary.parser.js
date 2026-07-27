@@ -1,28 +1,24 @@
+import { getSection } from "./helpers/getSection.js";
+import { cleanLines } from "./helpers/cleanLines.js";
+
 export function parseGlossary(markdown) {
 
-  const match = markdown.match(
-    /#\s+Glossary\s*\n([\s\S]*?)(?=\n#\s+|$)/i
-  );
+  const section = getSection(markdown, "Glossary");
 
+  if (!section) return [];
 
-  if (!match) return [];
-
-
-  return match[1]
-    .split("\n")
+  return cleanLines(section)
     .map(line => {
 
-      const item = line.match(
-        /[-*]?\s*\*\*(.*?)\*\*\s*:\s*(.*)/
+      const match = line.match(
+        /^[-*]?\s*\*\*(.*?)\*\*\s*:\s*(.*)$/
       );
 
-
-      if (!item) return null;
-
+      if (!match) return null;
 
       return {
-        term: item[1].trim(),
-        definition: item[2].trim(),
+        term: match[1].trim(),
+        definition: match[2].trim(),
       };
 
     })
