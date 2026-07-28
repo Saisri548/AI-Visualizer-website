@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 
-import useArticle from "../hooks/useArticle";
+import useArticle from "../Hooks/useArticle";
 import ArticleRenderer from "../components/article/ArticleRenderer";
 
 export default function ArticlePage() {
