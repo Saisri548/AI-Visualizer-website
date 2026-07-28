@@ -2,7 +2,9 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import MarkdownRenderer from "./MarkdownRenderer";
 
-export default function InterviewQuestions({ data }) {
+export default function InterviewQuestions({ section }) {
+  const data = section?.data;
+
   if (!data?.content) return null;
 
   const blocks = data.content
@@ -14,7 +16,7 @@ export default function InterviewQuestions({ data }) {
   return (
     <section className="mb-12">
       <h2 className="text-3xl font-bold mb-6">
-        Interview Questions
+        {section.title}
       </h2>
 
       <div className="space-y-4">
@@ -27,19 +29,21 @@ export default function InterviewQuestions({ data }) {
               onClick={() =>
                 setOpen(open === index ? null : index)
               }
-              className="w-full flex justify-between items-center p-5 text-left font-semibold bg-gray-50 hover:bg-gray-100"
+              className="w-full flex justify-between items-center p-5 text-left font-semibold bg-gray-50 hover:bg-gray-100 transition"
             >
-              Question {index + 1}
+              <span>
+                Question {index + 1}
+              </span>
 
               {open === index ? (
-                <ChevronUp />
+                <ChevronUp size={20} />
               ) : (
-                <ChevronDown />
+                <ChevronDown size={20} />
               )}
             </button>
 
             {open === index && (
-              <div className="p-6">
+              <div className="p-6 bg-white">
                 <MarkdownRenderer content={item} />
               </div>
             )}
